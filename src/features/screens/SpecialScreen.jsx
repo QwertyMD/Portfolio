@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { SPECIAL } from "../data";
-import { blip } from "../sound";
+import { SPECIAL } from "@/data/special";
+import { blip } from "@/lib/audio";
 
 function Pips({ value }) {
   return (
@@ -12,7 +12,7 @@ function Pips({ value }) {
 }
 
 export default function SpecialScreen({ sound }) {
-  const [sel, setSel] = useState(4); // Intelligence first — honest default
+  const [sel, setSel] = useState(4);
   const s = SPECIAL[sel];
 
   const pick = (i) => {
@@ -28,15 +28,14 @@ export default function SpecialScreen({ sound }) {
           {SPECIAL.map((a, i) => (
             <li key={a.letter}>
               <button
+                type="button"
                 onClick={() => pick(i)}
                 aria-pressed={sel === i}
                 className={`flex w-full items-center gap-3 px-2 py-3 text-left transition-all hover:translate-x-1 sm:gap-4 ${
                   sel === i ? "bg-[var(--pip-faint)]" : "hover:bg-[var(--pip-faint)]/50"
                 }`}
               >
-                <span
-                  className={`font-display w-10 text-3xl ${sel === i ? "pip-glow" : "opacity-70"}`}
-                >
+                <span className={`font-display w-10 text-3xl ${sel === i ? "pip-glow" : "opacity-70"}`}>
                   {sel === i ? "> " : "  "}
                   {a.letter}
                 </span>
@@ -51,7 +50,7 @@ export default function SpecialScreen({ sound }) {
             </li>
           ))}
         </ul>
-        <p className="text-[11px] tracking-[0.3em] opacity-60 mt-auto pt-3">
+        <p className="mt-auto pt-3 text-[11px] tracking-[0.3em] opacity-60">
           SELECT AN ATTRIBUTE TO INSPECT // TOTAL {SPECIAL.reduce((n, a) => n + a.value, 0)}/70
         </p>
       </section>
@@ -69,12 +68,14 @@ export default function SpecialScreen({ sound }) {
         </p>
         <div className="mt-auto flex gap-2 pt-4">
           <button
+            type="button"
             onClick={() => pick((sel + SPECIAL.length - 1) % SPECIAL.length)}
             className="flex-1 border-2 pip-rule py-1 font-display text-xl tracking-widest hover:bg-[var(--pip-faint)]"
           >
             ◄ PREV
           </button>
           <button
+            type="button"
             onClick={() => pick((sel + 1) % SPECIAL.length)}
             className="flex-1 border-2 pip-rule py-1 font-display text-xl tracking-widest hover:bg-[var(--pip-faint)]"
           >

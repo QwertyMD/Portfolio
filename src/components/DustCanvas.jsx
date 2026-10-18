@@ -1,32 +1,39 @@
 import { useEffect, useRef } from "react";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
-/** Low-count drifting ash/dust canvas. Disabled under reduced motion. */
+const PARTICLE_COUNT = 70;
+
+function createParticles() {
+  return Array.from({ length: PARTICLE_COUNT }, () => ({
+    x: Math.random(),
+    y: Math.random(),
+    r: 0.6 + Math.random() * 1.8,
+    vx: 0.0002 + Math.random() * 0.0009,
+    vy: -0.0002 - Math.random() * 0.0007,
+    a: 0.12 + Math.random() * 0.4,
+    ph: Math.random() * Math.PI * 2,
+  }));
+}
+
 export default function DustCanvas({ color = "#33ff66" }) {
-  const ref = useRef(null);
+  const canvasRef = useRef(null);
+  const reduced = usePrefersReducedMotion();
 
   useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    const canvas = canvasRef.current;
+    if (!canvas || reduced) return undefined;
     const ctx = canvas.getContext("2d");
+    if (!ctx) return undefined;
+
     let raf = 0;
-    let w = 0;
-    let h = 0;
-    const N = 70;
-    const ps = Array.from({ length: N }, () => ({
-      x: Math.random(),
-      y: Math.random(),
-      r: 0.6 + Math.random() * 1.8,
-      vx: 0.0002 + Math.random() * 0.0009,
-      vy: -0.0002 - Math.random() * 0.0007,
-      a: 0.12 + Math.random() * 0.4,
-      ph: Math.random() * Math.PI * 2,
-    }));
+    let width = 0;
+    let height = 0;
+    const particles = createParticles();
 
     const resize = () => {
       const rect = canvas.getBoundingClientRect();
-      w = canvas.width = Math.max(1, Math.floor(rect.width));
-      h = canvas.height = Math.max(1, Math.floor(rect.height));
+      width = canvas.width = Math.max(1, Math.floor(rect.width));
+      height = canvas.height = Math.max(1, Math.floor(rect.height));
     };
     resize();
     window.addEventListener("resize", resize);
@@ -34,8 +41,8 @@ export default function DustCanvas({ color = "#33ff66" }) {
     let t = 0;
     const tick = () => {
       t += 0.016;
-      ctx.clearRect(0, 0, w, h);
-      for (const p of ps) {
+      ctx.clearRect(0, 0, width, height);
+      for (const p of particles) {
         p.x += p.vx + Math.sin(t + p.ph) * 0.0003;
         p.y += p.vy;
         if (p.x > 1.02) p.x = -0.02;
@@ -46,22 +53,23 @@ export default function DustCanvas({ color = "#33ff66" }) {
         ctx.globalAlpha = p.a;
         ctx.fillStyle = color;
         ctx.beginPath();
-        ctx.arc(p.x * w, p.y * h, p.r, 0, Math.PI * 2);
+        ctx.arc(p.x * width, p.y * height, p.r, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.globalAlpha = 1;
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
+
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener("resize", resize);
     };
-  }, [color]);
+  }, [color, reduced]);
 
   return (
     <canvas
-      ref={ref}
+      ref={canvasRef}
       aria-hidden="true"
       className="pointer-events-none absolute inset-0 h-full w-full opacity-70"
     />

@@ -1,128 +1,114 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import Boot from "./vault/Boot";
-import PipHeader from "./vault/PipHeader";
-import PipTabs from "./vault/PipTabs";
-import WastelandBg from "./vault/WastelandBg";
-import DustCanvas from "./vault/DustCanvas";
-import StatScreen from "./vault/screens/StatScreen";
-import SpecialScreen from "./vault/screens/SpecialScreen";
-import QuestsScreen from "./vault/screens/QuestsScreen";
-import MapScreen from "./vault/screens/MapScreen";
-import RadioScreen from "./vault/screens/RadioScreen";
-import { TABS } from "./vault/data";
-import { blip } from "./vault/sound";
+import AccessDenied, { DENIED_MESSAGE } from "@/components/AccessDenied";
+import DustCanvas from "@/components/DustCanvas";
+import WastelandBg from "@/components/WastelandBg";
+import BootScreen from "@/features/boot/BootScreen";
+import PipHeader from "@/features/header/PipHeader";
+import PipTabs from "@/features/tabs/PipTabs";
+import MapScreen from "@/features/screens/MapScreen";
+import QuestsScreen from "@/features/screens/QuestsScreen";
+import RadioScreen from "@/features/screens/RadioScreen";
+import SpecialScreen from "@/features/screens/SpecialScreen";
+import StatScreen from "@/features/screens/StatScreen";
+import { PROFILE } from "@/data/profile";
+import useHashTab from "@/hooks/useHashTab";
+import usePipColor from "@/hooks/usePipColor";
+import { blip } from "@/lib/audio";
+import { pipHex } from "@/lib/colors";
+import { DEFAULT_TAB } from "@/lib/tabs";
 
-const PIP_HEX = { green: "#33ff66", amber: "#ffb000", blue: "#8df5ff", white: "#e8f5d6" };
-const VALID = new Set(TABS.map((t) => t.id));
+const SCREENS = {
+  stat: StatScreen,
+  special: SpecialScreen,
+  quests: QuestsScreen,
+  map: MapScreen,
+  radio: RadioScreen,
+};
 
-function tabFromHash() {
-  const h = window.location.hash.replace("#", "").toLowerCase();
-  return VALID.has(h) ? h : "stat";
-}
+const DENIED_DURATION = 2200;
+const BURST_DURATION = 260;
+const DENIED_POPUP_MARGIN = 8;
+const DENIED_POPUP_RIGHT = 330;
+const DENIED_POPUP_BOTTOM = 150;
 
 export default function App() {
   const [booted, setBooted] = useState(false);
-  const [tab, setTab] = useState(tabFromHash);
-  const [pip, setPip] = useState(() => localStorage.getItem("pip-color") || "green");
+  const [tab, selectTab] = useHashTab();
+  const [pip, setPip] = usePipColor();
   const [sound, setSound] = useState(false);
-  const [burst, setBurst] = useState(0);
-  const [rc, setRc] = useState(null);
-  const rcTimer = useRef(null);
+  const [denied, setDenied] = useState(null);
+  const [burstTick, setBurstTick] = useState(0);
+  const deniedTimer = useRef(null);
 
-  const DENIED = "ACCESS DENIED // VAULT-TEC SECURITY";
+  const showDenied = useCallback(
+    (e) => {
+      e.preventDefault();
+      if (sound) blip(150, 0.15, "sawtooth", 0.05);
+      clearTimeout(deniedTimer.current);
+      setDenied({
+        x: Math.max(DENIED_POPUP_MARGIN, Math.min(e.clientX, window.innerWidth - DENIED_POPUP_RIGHT)),
+        y: Math.max(DENIED_POPUP_MARGIN, Math.min(e.clientY, window.innerHeight - DENIED_POPUP_BOTTOM)),
+        msg: DENIED_MESSAGE,
+        id: Date.now(),
+      });
+      deniedTimer.current = setTimeout(() => setDenied(null), DENIED_DURATION);
+    },
+    [sound]
+  );
 
-  const onContextMenu = (e) => {
-    e.preventDefault();
-    if (sound) blip(150, 0.15, "sawtooth", 0.05);
-    clearTimeout(rcTimer.current);
-    setRc({
-      x: Math.max(8, Math.min(e.clientX, window.innerWidth - 330)),
-      y: Math.max(8, Math.min(e.clientY, window.innerHeight - 150)),
-      msg: DENIED,
-      id: Date.now(),
-    });
-    rcTimer.current = setTimeout(() => setRc(null), 2200);
-  };
+  const dismissDenied = useCallback(() => setDenied(null), []);
 
-  const finishBoot = useCallback(() => setBooted(true), []);
-
-  useEffect(() => {
-    document.documentElement.dataset.pip = pip;
-    localStorage.setItem("pip-color", pip);
-  }, [pip]);
+  useEffect(() => () => clearTimeout(deniedTimer.current), []);
 
   useEffect(() => {
-    const onHash = () => setTab(tabFromHash());
-    window.addEventListener("hashchange", onHash);
-    return () => window.removeEventListener("hashchange", onHash);
-  }, []);
-
-  const changeTab = (id) => {
-    if (id === tab) return;
-    setTab(id);
-    setBurst((b) => b + 1);
-    setTimeout(() => setBurst(0), 260);
-    if (window.location.hash !== `#${id}`) window.location.hash = id;
-  };
-
-  useEffect(() => {
-    document.title = `AARYAN DHKAL // ${tab.toUpperCase()} — VAULT-TEC TERMINAL`;
+    document.title = `${PROFILE.name} // ${tab.toUpperCase()} — VAULT-TEC TERMINAL`;
   }, [tab]);
 
-  if (!booted)
-    return (
-      <div className="min-h-screen" onContextMenu={onContextMenu} onClick={() => setRc(null)}>
-        <Boot onDone={finishBoot} />
-        {rc && (
-          <div
-            key={rc.id}
-            aria-live="polite"
-            className="animate-screen-in-fast pip-panel pip-corners fixed z-50 w-[300px] bg-[var(--pip-bg)] p-4"
-            style={{ left: rc.x, top: rc.y }}
-          >
-            <p className="font-display text-2xl tracking-widest text-[var(--pip)] pip-glow">⚠ {rc.msg}</p>
-            <p className="mt-2 text-[11px] tracking-[0.3em] opacity-60">THIS INCIDENT WILL BE REPORTED</p>
-          </div>
-        )}
-      </div>
-    );
+  const changeTab = useCallback(
+    (id) => {
+      if (id === tab) return;
+      selectTab(id);
+      setBurstTick((b) => b + 1);
+    },
+    [tab, selectTab]
+  );
+
+  const burstVisible = burstTick > 0;
+
+  useEffect(() => {
+    if (!burstVisible) return undefined;
+    const t = setTimeout(() => setBurstTick(0), BURST_DURATION);
+    return () => clearTimeout(t);
+  }, [burstVisible]);
+
+  const Screen = SCREENS[tab] ?? SCREENS[DEFAULT_TAB];
 
   return (
-    <div className="min-h-screen" onContextMenu={onContextMenu} onClick={() => setRc(null)}>
+    <div className="min-h-screen" onContextMenu={showDenied} onClick={dismissDenied}>
       <WastelandBg />
-      <div className="crt crt-vignette flex h-dvh flex-col overflow-hidden animate-pip-flicker px-2 py-2 sm:px-3 sm:py-2">
-        <div className="pip-panel pip-corners relative flex min-h-0 flex-1 flex-col overflow-hidden p-4 sm:p-6">
-          <DustCanvas color={PIP_HEX[pip] ?? PIP_HEX.green} />
-          {burst > 0 && (
-            <div key={burst} aria-hidden="true" className="static-overlay pointer-events-none absolute inset-0 z-20" />
-          )}
-          <div key={pip} aria-hidden="true" className="flash-overlay pointer-events-none absolute inset-0 z-20" />
-          <div className="relative flex min-h-0 flex-1 flex-col">
-            <PipHeader pip={pip} setPip={setPip} sound={sound} setSound={setSound} />
-            <PipTabs tab={tab} setTab={changeTab} sound={sound} />
-            <main className="mt-4 min-h-0 flex-1 overflow-y-auto" role="tabpanel" aria-label={tab}>
-              <div key={tab} className="animate-screen-in h-full">
-              {tab === "stat" && <StatScreen />}
-              {tab === "special" && <SpecialScreen sound={sound} />}
-              {tab === "quests" && <QuestsScreen sound={sound} />}
-              {tab === "map" && <MapScreen sound={sound} />}
-              {tab === "radio" && <RadioScreen sound={sound} />}
-              </div>
-            </main>
+      {!booted ? (
+        <BootScreen onDone={() => setBooted(true)} />
+      ) : (
+        <div className="crt crt-vignette flex h-dvh animate-pip-flicker flex-col overflow-hidden px-2 py-2 sm:px-3 sm:py-2">
+          <div className="pip-panel pip-corners relative flex min-h-0 flex-1 flex-col overflow-hidden p-4 sm:p-6">
+            <DustCanvas color={pipHex(pip)} />
+            {burstVisible && (
+              <div key={burstTick} aria-hidden="true" className="static-overlay pointer-events-none absolute inset-0 z-20" />
+            )}
+            <div key={pip} aria-hidden="true" className="flash-overlay pointer-events-none absolute inset-0 z-20" />
+            <div className="relative flex min-h-0 flex-1 flex-col">
+              <PipHeader pip={pip} onPipChange={setPip} sound={sound} onSoundChange={setSound} />
+              <PipTabs tab={tab} onTabChange={changeTab} sound={sound} />
+              <main className="mt-4 min-h-0 flex-1 overflow-y-auto" role="tabpanel" aria-label={tab}>
+                <div key={tab} className="animate-screen-in h-full">
+                  <Screen sound={sound} />
+                </div>
+              </main>
+            </div>
           </div>
         </div>
-      </div>
-      {rc && (
-        <div
-          key={rc.id}
-          aria-live="polite"
-          className="animate-screen-in-fast pip-panel pip-corners fixed z-50 w-[300px] bg-[var(--pip-bg)] p-4"
-          style={{ left: rc.x, top: rc.y }}
-        >
-          <p className="font-display text-2xl tracking-widest text-[var(--pip)] pip-glow">⚠ {rc.msg}</p>
-          <p className="mt-2 text-[11px] tracking-[0.3em] opacity-60">THIS INCIDENT WILL BE REPORTED</p>
-        </div>
       )}
+      <AccessDenied popup={denied} />
     </div>
   );
 }

@@ -1,4 +1,3 @@
-// Tiny WebAudio bleeps — no assets, off by default, created lazily on first user gesture.
 let ctx = null;
 
 function ensureCtx() {
@@ -9,11 +8,15 @@ function ensureCtx() {
   return ctx;
 }
 
+function resumeIfSuspended(ac) {
+  if (ac.state === "suspended") void ac.resume();
+}
+
 export function blip(freq = 880, dur = 0.06, type = "square", gain = 0.06) {
   try {
     const ac = ensureCtx();
     if (!ac) return;
-    if (ac.state === "suspended") void ac.resume();
+    resumeIfSuspended(ac);
     const osc = ac.createOscillator();
     const g = ac.createGain();
     osc.type = type;
@@ -24,7 +27,7 @@ export function blip(freq = 880, dur = 0.06, type = "square", gain = 0.06) {
     osc.start();
     osc.stop(ac.currentTime + dur);
   } catch {
-    /* silent — audio is garnish */
+    return;
   }
 }
 
@@ -32,7 +35,7 @@ export function staticBurst(dur = 0.18) {
   try {
     const ac = ensureCtx();
     if (!ac) return;
-    if (ac.state === "suspended") void ac.resume();
+    resumeIfSuspended(ac);
     const len = Math.floor(ac.sampleRate * dur);
     const buf = ac.createBuffer(1, len, ac.sampleRate);
     const d = buf.getChannelData(0);
@@ -42,6 +45,6 @@ export function staticBurst(dur = 0.18) {
     src.connect(ac.destination);
     src.start();
   } catch {
-    /* silent */
+    return;
   }
 }

@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ---- phosphor themes (switchable, default green) ---- */
 :root,
 [data-pip="green"] {
   --pip: #33ff66;
@@ -52,7 +51,6 @@
     background: var(--pip);
     color: #060805;
   }
-  /* no visible scrollbars anywhere — panes stay wheel / touch / keyboard scrollable */
   * {
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -77,14 +75,9 @@
     box-shadow: 0 0 0 1px var(--pip-bg), 0 0 18px var(--pip-faint),
       inset 0 0 24px rgba(0, 0, 0, 0.55);
   }
-  .pip-panel-flat {
-    background: rgba(0, 0, 0, 0.45);
-    border: 2px solid var(--pip);
-  }
   .pip-rule {
     border-color: var(--pip-dim);
   }
-  /* corner brackets */
   .pip-corners {
     position: relative;
   }
@@ -108,7 +101,6 @@
     right: -2px;
     border-width: 0 4px 4px 0;
   }
-  /* CRT glass: scanlines + vignette */
   .crt {
     position: relative;
   }
@@ -177,7 +169,6 @@
   .tabular {
     font-variant-numeric: tabular-nums;
   }
-  /* ---- interaction motion ---- */
   .animate-screen-in {
     animation: screen-in 0.32s ease-out;
   }
@@ -202,6 +193,49 @@
   }
   .route-flow {
     animation: route-flow 2.4s linear infinite;
+  }
+  .logo-glow {
+    filter: drop-shadow(0 0 14px var(--pip-dim));
+  }
+  .logo-power-on {
+    transform-origin: center;
+    animation:
+      logo-unwind 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.25) both,
+      logo-buzz 3.4s linear 0.6s infinite;
+  }
+}
+
+@keyframes logo-unwind {
+  0% {
+    transform: scaleY(0.01) scaleX(1.35);
+    filter: brightness(3);
+  }
+  45% {
+    transform: scaleY(1.16) scaleX(0.96);
+    filter: brightness(2.1);
+  }
+  75% {
+    transform: scaleY(0.97) scaleX(1.01);
+    filter: brightness(1.35);
+  }
+  100% {
+    transform: scaleY(1) scaleX(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes logo-buzz {
+  0%, 7%, 9%, 37%, 39%, 71%, 73%, 100% {
+    opacity: 1;
+  }
+  8% {
+    opacity: 0.7;
+  }
+  38% {
+    opacity: 0.85;
+  }
+  72% {
+    opacity: 0.55;
   }
 }
 
@@ -232,6 +266,17 @@
   }
   100% {
     opacity: 0;
+  }
+}
+
+@keyframes pip-blink {
+  0%,
+  60% {
+    opacity: 1;
+  }
+  61%,
+  100% {
+    opacity: 0.15;
   }
 }
 
