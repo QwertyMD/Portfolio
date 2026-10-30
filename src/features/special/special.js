@@ -20,7 +20,7 @@ export const SPECIAL = [
     name: "ENDURANCE",
     value: 7,
     tag: "LONG GAME",
-    desc: "Writing code since +2, now a CS undergrad. Shows up daily — docs, retries, one more build.",
+    desc: "Writing code since +2, now a CS undergraduate. Shows up daily — docs, retries, one more build.",
     proof: "BIC / daily grind",
   },
   {
@@ -56,3 +56,5 @@ export const SPECIAL = [
     proof: "UpTogether",
   },
 ];
+
+export const SPECIAL_CAP = SPECIAL.length * 10;

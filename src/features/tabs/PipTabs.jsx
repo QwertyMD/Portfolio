@@ -1,16 +1,11 @@
-import { QUESTS } from "@/data/quests";
-import { RADIO } from "@/data/radio";
-import { TABS } from "@/lib/tabs";
+import { TABS } from "@/features/tabs/tabs";
 import { blip } from "@/lib/audio";
 
-const COUNTS = { quests: QUESTS.length, radio: RADIO.length };
-const TAB_ORDER = TABS.map((t) => t.id);
-
-export default function PipTabs({ tab, onTabChange, sound }) {
+export default function PipTabs({ tab, onTabChange, sound, counts = {} }) {
   const go = (id) => {
     if (id === tab) return;
     onTabChange(id);
-    if (sound) blip(720 + TAB_ORDER.indexOf(id) * 90);
+    if (sound) blip(720 + TABS.findIndex((t) => t.id === id) * 90);
   };
 
   return (
@@ -18,24 +13,28 @@ export default function PipTabs({ tab, onTabChange, sound }) {
       <ul className="flex flex-wrap gap-2" role="tablist">
         {TABS.map((t) => {
           const active = tab === t.id;
+          const Icon = t.Icon;
+          const count = counts[t.id];
           return (
             <li key={t.id}>
-              <button
-                type="button"
+              <a
+                href={`#${t.id}`}
                 role="tab"
                 aria-selected={active}
-                onClick={() => go(t.id)}
-                className={`font-display border-2 pip-rule px-4 py-1 text-xl tracking-widest transition-colors sm:text-2xl hover:shadow-[0_0_14px_var(--pip-faint)] ${
+                onClick={(e) => {
+                  e.preventDefault();
+                  go(t.id);
+                }}
+                className={`font-display flex items-center gap-2 border-2 pip-rule px-4 py-1.5 text-2xl tracking-widest transition-colors sm:px-5 sm:text-2xl hover:shadow-[0_0_14px_var(--pip-faint)] ${
                   active
                     ? "bg-[var(--pip)] text-black pip-glow-soft"
                     : "text-[var(--pip)] opacity-70 hover:opacity-100 hover:bg-[var(--pip-faint)]"
                 }`}
               >
-                {active ? "[ " : "  "}
-                {t.label}
-                {COUNTS[t.id] ? ` (${COUNTS[t.id]})` : ""}
-                {active ? " ]" : "  "}
-              </button>
+                <Icon className={active ? "" : "opacity-60"} />
+                <span className="leading-none">{t.label}</span>
+                {count ? <span className="leading-none opacity-60">({count})</span> : null}
+              </a>
             </li>
           );
         })}

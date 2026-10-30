@@ -1,17 +1,15 @@
 import logo from "@/assets/logo.png";
+import { maskStyle } from "@/lib/maskStyle";
 
-const LOGO_MASK = {
-  backgroundColor: "currentColor",
-  WebkitMaskImage: `url(${logo})`,
-  maskImage: `url(${logo})`,
-  WebkitMaskSize: "contain",
-  maskSize: "contain",
-  WebkitMaskRepeat: "no-repeat",
-  maskRepeat: "no-repeat",
-  WebkitMaskPosition: "center",
-  maskPosition: "center",
-};
-
-export default function VaultTecLogo({ className }) {
-  return <div role="img" aria-label="Vault-Tec Industries" className={className} style={LOGO_MASK} />;
+export default function VaultTecLogo({ className, "aria-hidden": ariaHidden, ...rest }) {
+  return (
+    <div
+      className={className}
+      style={maskStyle(logo)}
+      {...(ariaHidden
+        ? { "aria-hidden": true }
+        : { role: "img", "aria-label": "Vault-Tec Industries" })}
+      {...rest}
+    />
+  );
 }

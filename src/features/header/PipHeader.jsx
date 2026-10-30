@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { MusicNote } from "@/components/icons";
 import VaultTecLogo from "@/components/VaultTecLogo";
 import { blip } from "@/lib/audio";
 import { PIP_COLORS } from "@/lib/colors";
@@ -20,20 +21,18 @@ export default function PipHeader({ pip, onPipChange, sound, onSoundChange }) {
   }, []);
 
   return (
-    <header className="flex flex-wrap items-center gap-x-8 gap-y-3 border-b-2 pip-rule pb-3">
-      <VaultTecLogo className="h-12 w-[72px] sm:h-14 sm:w-[84px]" />
+    <header className="relative flex flex-wrap items-center gap-x-8 gap-y-3 border-b-2 pip-rule pb-3">
+      <VaultTecLogo className="h-14 w-[84px] sm:hidden" />
 
       <div className="min-w-[240px] flex-1 leading-tight">
-        <p className="font-display text-3xl tracking-[0.12em] pip-glow sm:text-4xl">
-          WELCOME! <span className="opacity-60">{"//"}</span> VAULT 404
-        </p>
-        <p className="mt-1 text-xs tracking-[0.3em] opacity-70">
-          <span className="tabular">{formatClock(now)}</span> {"//"} 10.14.2287 {"//"} SIG ▂▄▆█ {"//"} ITAHARI WASTELAND
+        <p className="font-display text-3xl tracking-[0.12em] pip-glow sm:text-4xl">WELCOME!</p>
+        <p className="font-display mt-1 text-2xl tracking-[0.25em] pip-glow-soft sm:text-3xl">
+          {formatClock(now)}
         </p>
       </div>
 
       <div className="ml-auto flex items-center gap-4">
-        <div className="flex items-center gap-2" role="group" aria-label="Phosphor color">
+        <div className="grid grid-cols-3 gap-x-2 gap-y-1.5" role="group" aria-label="Phosphor color">
           {PIP_COLORS.map((c) => (
             <button
               key={c.id}
@@ -43,9 +42,9 @@ export default function PipHeader({ pip, onPipChange, sound, onSoundChange }) {
               aria-pressed={pip === c.id}
               onClick={() => {
                 onPipChange(c.id);
-                if (sound) blip(c.id === "green" ? 880 : c.id === "amber" ? 660 : 990);
+                if (sound) blip(c.blip);
               }}
-              className="h-5 w-5 border-2 transition-transform hover:scale-125 hover:shadow-[0_0_10px_currentColor]"
+              className="h-6 w-6 border-2 transition-transform hover:scale-125 hover:shadow-[0_0_10px_currentColor]"
               style={{
                 background: pip === c.id ? c.hex : "transparent",
                 borderColor: c.hex,
@@ -62,11 +61,16 @@ export default function PipHeader({ pip, onPipChange, sound, onSoundChange }) {
             if (next) blip(880, 0.09);
           }}
           aria-pressed={sound}
-          className="border-2 pip-rule px-3 py-1 text-xs tracking-[0.25em] transition-colors hover:bg-[var(--pip-faint)]"
+          className="border-2 pip-rule px-4 py-1.5 text-sm tracking-[0.2em] transition-colors hover:bg-[var(--pip-faint)]"
         >
-          ♪ SOUND:{sound ? "ON" : "OFF"}
+          <MusicNote className="mr-1.5" />SOUND:{sound ? "ON" : "OFF"}
         </button>
       </div>
+
+      <VaultTecLogo
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-1/2 hidden h-16 w-[96px] -translate-x-1/2 -translate-y-1/2 sm:block"
+      />
     </header>
   );
 }

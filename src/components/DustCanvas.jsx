@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
+import { DEFAULT_PIP_COLOR, pipHex } from "@/lib/colors";
 
 const PARTICLE_COUNT = 70;
 
@@ -15,7 +16,7 @@ function createParticles() {
   }));
 }
 
-export default function DustCanvas({ color = "#33ff66" }) {
+export default function DustCanvas({ color = pipHex(DEFAULT_PIP_COLOR) }) {
   const canvasRef = useRef(null);
   const reduced = usePrefersReducedMotion();
 

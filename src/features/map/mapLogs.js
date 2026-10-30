@@ -39,6 +39,6 @@ export const MAP_LOGS = [
     y: 58,
     name: "SISANITECH",
     tag: "CURRENT POST",
-    text: "Frontend dev. Shipping Sisani-EPS (medical entrance prep) plus Windows tech-support on the Atlas Discord since Nov 2024.",
+    text: "Frontend Developer. Shipping Sisani-EPS (medical entrance prep).",
   },
 ];

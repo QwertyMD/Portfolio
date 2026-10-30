@@ -6,6 +6,7 @@ export default function Typewriter({
   speed = 14,
   lineDelay = 120,
   className = "",
+  bullet,
   onDone,
 }) {
   const reduced = usePrefersReducedMotion();
@@ -37,6 +38,7 @@ export default function Typewriter({
     <div className={className} aria-live="polite">
       {flat.split("\n").map((p, i, all) => (
         <p key={i} className={i === all.length - 1 ? "type-caret" : ""}>
+          {bullet}
           {p || "\u00A0"}
         </p>
       ))}

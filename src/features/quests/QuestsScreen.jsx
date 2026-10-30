@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { QUESTS } from "@/data/quests";
+import { ArrowUpRight, Caret, Chevron, Dot, DoubleSlash, IconQuest, Plus } from "@/components/icons";
+import { QUESTS } from "@/features/quests/quests";
 import { blip } from "@/lib/audio";
 
 export default function QuestsScreen({ sound }) {
@@ -14,8 +15,9 @@ export default function QuestsScreen({ sound }) {
   return (
     <div className="grid gap-4 lg:h-full lg:grid-cols-[340px_1fr] lg:grid-rows-1">
       <section aria-label="Quest list" className="pip-panel pip-corners flex flex-col p-3">
-        <h2 className="font-display pip-glow px-2 pt-1 text-2xl tracking-widest">
-          {"// QUEST LOG"} <span className="opacity-60">({QUESTS.length})</span>
+        <h2 className="font-display pip-glow flex items-center gap-2 px-2 pt-1 text-2xl tracking-widest">
+          <IconQuest />
+          QUEST LOG <span className="opacity-60">({QUESTS.length})</span>
         </h2>
         <ul role="listbox" aria-activedescendant={q.id} className="mt-2 max-h-[420px] overflow-y-auto lg:max-h-none">
           {QUESTS.map((item, i) => (
@@ -25,28 +27,30 @@ export default function QuestsScreen({ sound }) {
                 role="option"
                 aria-selected={sel === i}
                 onClick={() => pick(i)}
-                className={`group flex w-full items-baseline gap-2 px-3 py-3 text-left transition-all hover:translate-x-1 ${
+                className={`group flex w-full items-center gap-2 px-3 py-3 text-left transition-all hover:translate-x-1 ${
                   sel === i
                     ? "bg-[var(--pip-faint)]"
                     : "opacity-70 hover:opacity-100 hover:bg-[var(--pip-faint)]/40"
                 }`}
               >
-                <span className="font-display text-xl">
-                  {sel === i ? ">" : (
+                <span className="inline-flex w-4 justify-center text-xl">
+                  {sel === i ? (
+                    <Caret />
+                  ) : (
                     <>
-                      <span className="group-hover:hidden">·</span>
-                      <span className="hidden group-hover:inline">›</span>
+                      <Dot className="opacity-70 group-hover:hidden" />
+                      <Chevron className="hidden group-hover:block" />
                     </>
                   )}
                 </span>
                 <span className="font-display block text-xl leading-tight tracking-wider">{item.name}</span>
-                <span className="ml-auto text-xs tabular">[{String(i + 1).padStart(2, "0")}]</span>
+                <span className="ml-auto text-sm tabular">[{String(i + 1).padStart(2, "0")}]</span>
               </button>
             </li>
           ))}
         </ul>
-        <p aria-live="polite" className="mt-auto border-t pip-rule pt-3 text-xs tracking-[0.25em] opacity-80">
-          {">"} {q.name} {"//"} {q.kind} {"//"} LVL {q.level}
+        <p aria-live="polite" className="mt-auto border-t pip-rule pt-3 text-sm tracking-[0.2em] opacity-80">
+          <Caret className="mr-1" /> {q.name} <DoubleSlash /> {q.kind}
         </p>
       </section>
 
@@ -57,12 +61,13 @@ export default function QuestsScreen({ sound }) {
           <p className="mt-4 border-l-4 border-[var(--pip)] pl-3 font-display text-2xl leading-snug">
             OBJECTIVE: {q.objective}
           </p>
-          <p className="mt-3 max-w-3xl text-[15px] leading-relaxed opacity-90">{q.notes}</p>
+          <p className="mt-3 max-w-3xl text-base leading-relaxed opacity-90">{q.notes}</p>
 
           <div className="mt-4 flex flex-wrap gap-2" aria-label="Rewards">
             {q.reward.map((r) => (
-              <span key={r} className="tag-hover border pip-rule px-3 py-1 text-xs tracking-[0.25em]">
-                + {r}
+              <span key={r} className="tag-hover border pip-rule px-3.5 py-1.5 text-sm tracking-[0.2em]">
+                <Plus className="mr-1.5" />
+                {r}
               </span>
             ))}
           </div>
@@ -77,15 +82,12 @@ export default function QuestsScreen({ sound }) {
                   onClick={() => sound && blip(1200, 0.09)}
                   className="mt-6 inline-block bg-[var(--pip)] px-6 py-2 font-display text-2xl tracking-widest text-black transition-all hover:scale-[1.03] hover:shadow-[0_0_20px_var(--pip-dim)] active:scale-95"
                 >
-                  ACCEPT TRANSMISSION ↗
+                  ACCEPT TRANSMISSION <ArrowUpRight className="ml-2" />
                 </a>
-                <span className="text-xs tracking-[0.25em] opacity-60">
-                  DEST: {q.link.replace("https://", "")}
-                </span>
               </>
             ) : (
               <span className="border-2 border-dashed pip-rule px-6 py-2 font-display text-2xl tracking-widest opacity-70">
-                NO PUBLIC FREQUENCY // CLASSIFIED
+                NO PUBLIC FREQUENCY <DoubleSlash /> CLASSIFIED
               </span>
             )}
           </div>

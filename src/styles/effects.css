@@ -1,0 +1,195 @@
+@layer utilities {
+  .font-display {
+    font-family: "VT323", "Share Tech Mono", monospace;
+  }
+  .pip-glow {
+    text-shadow: 0 0 6px var(--pip-dim), 0 0 22px var(--pip-faint);
+  }
+  .pip-glow-soft {
+    text-shadow: 0 0 4px var(--pip-faint);
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .ic {
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+  }
+  .animate-screen-in {
+    animation: screen-in 0.32s ease-out;
+  }
+  .animate-screen-in-fast {
+    animation: screen-in 0.22s ease-out;
+  }
+  .static-overlay {
+    background: var(--pip-bg);
+    animation: dip 0.34s ease-out 1 forwards;
+  }
+  .flash-overlay {
+    background: var(--pip);
+    animation: flash-fade 0.3s ease-out 1 forwards;
+  }
+  .pulse-ring {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: pulse-ring 1.6s ease-out infinite;
+  }
+  .animate-stamp {
+    animation: stamp-in 0.32s ease-out;
+  }
+  .route-flow {
+    animation: route-flow 2.4s linear infinite;
+  }
+  .logo-glow {
+    filter: drop-shadow(0 0 14px var(--pip-dim));
+  }
+  .logo-power-on {
+    transform-origin: center;
+    animation:
+      logo-unwind 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.25) both,
+      logo-buzz 3.4s linear 0.6s infinite;
+  }
+}
+
+@keyframes logo-unwind {
+  0% {
+    transform: scaleY(0.01) scaleX(1.35);
+    filter: brightness(3);
+  }
+  45% {
+    transform: scaleY(1.16) scaleX(0.96);
+    filter: brightness(2.1);
+  }
+  75% {
+    transform: scaleY(0.97) scaleX(1.01);
+    filter: brightness(1.35);
+  }
+  100% {
+    transform: scaleY(1) scaleX(1);
+    filter: brightness(1);
+  }
+}
+
+@keyframes logo-buzz {
+  0%, 7%, 9%, 37%, 39%, 71%, 73%, 100% {
+    opacity: 1;
+  }
+  8% {
+    opacity: 0.7;
+  }
+  38% {
+    opacity: 0.85;
+  }
+  72% {
+    opacity: 0.55;
+  }
+}
+
+@keyframes screen-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes dip {
+  0% {
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes flash-fade {
+  0% {
+    opacity: 0.14;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes pip-blink {
+  0%,
+  60% {
+    opacity: 1;
+  }
+  61%,
+  100% {
+    opacity: 0.15;
+  }
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(1);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+@keyframes stamp-in {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-22deg) scale(1.7);
+  }
+  60% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) rotate(-10deg) scale(0.94);
+  }
+  100% {
+    opacity: 0.8;
+    transform: translate(-50%, -50%) rotate(-12deg) scale(1);
+  }
+}
+
+@keyframes route-flow {
+  to {
+    stroke-dashoffset: -16;
+  }
+}
+
+@keyframes crt-roll {
+  0% {
+    top: -22%;
+  }
+  100% {
+    top: 106%;
+  }
+}
+
+@keyframes flare-drift {
+  0% {
+    opacity: 0.82;
+    filter: brightness(1);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.05);
+  }
+  100% {
+    opacity: 0.9;
+    filter: brightness(1.18);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

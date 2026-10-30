@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { TAB_IDS, tabFromHash } from "@/lib/tabs";
+import { TAB_IDS, tabFromHash } from "@/features/tabs/tabs";
 
 export default function useHashTab() {
   const [tab, setTab] = useState(tabFromHash);

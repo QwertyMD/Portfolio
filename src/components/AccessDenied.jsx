@@ -1,3 +1,5 @@
+import { WarnTriangle } from "@/components/icons";
+
 export default function AccessDenied({ popup }) {
   if (!popup) return null;
 
@@ -9,13 +11,12 @@ export default function AccessDenied({ popup }) {
       style={{ left: popup.x, top: popup.y }}
     >
       <p className="font-display text-2xl tracking-widest text-[var(--pip)] pip-glow">
-        ⚠ {popup.msg}
+        <WarnTriangle className="mr-2" />
+        {popup.msg[0]} {popup.msg[1]}
       </p>
-      <p className="mt-2 text-[11px] tracking-[0.3em] opacity-60">
+      <p className="mt-2 text-xs tracking-[0.3em] opacity-60">
         THIS INCIDENT WILL BE REPORTED
       </p>
     </div>
   );
 }
-
-export const DENIED_MESSAGE = "ACCESS DENIED // VAULT-TEC SECURITY";

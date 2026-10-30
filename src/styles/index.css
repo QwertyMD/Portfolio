@@ -1,0 +1,7 @@
+@import "./theme.css";
+@import "./crt.css";
+@import "./effects.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -7,16 +7,6 @@ export default {
         display: ['"VT323"', '"Share Tech Mono"', "monospace"],
         mono: ['"Share Tech Mono"', '"VT323"', "monospace"],
       },
-      colors: {
-        pip: {
-          green: "#33ff66",
-          amber: "#ffb000",
-          blue: "#8df5ff",
-          paper: "#e8f5d6",
-          red: "#ff3b3b",
-          ink: "#060805",
-        },
-      },
       keyframes: {
         "pip-flicker": {
           "0%, 100%": { opacity: "1" },

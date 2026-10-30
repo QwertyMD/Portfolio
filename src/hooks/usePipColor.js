@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { DEFAULT_PIP_COLOR } from "@/lib/colors";
+import { DEFAULT_PIP_COLOR, PIP_COLORS } from "@/lib/colors";
 
 const STORAGE_KEY = "pip-color";
+const IDS = new Set(PIP_COLORS.map((c) => c.id));
 
 function readStored() {
   const stored = window.localStorage.getItem(STORAGE_KEY);
-  return stored ?? DEFAULT_PIP_COLOR;
+  return IDS.has(stored) ? stored : DEFAULT_PIP_COLOR;
 }
 
 export default function usePipColor() {

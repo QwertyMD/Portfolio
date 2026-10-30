@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { RADIO } from "@/data/radio";
+import { ArrowUpRight, IconRadio } from "@/components/icons";
+import { RADIO } from "@/features/radio/radio";
 import { blip, staticBurst } from "@/lib/audio";
 
 const DIAL_TICKS = [0, 1, 2, 3, 4, 5, 6, 7, 8];
@@ -21,7 +22,10 @@ export default function RadioScreen({ sound }) {
   return (
     <div className="grid gap-4 lg:h-full lg:grid-cols-[340px_1fr] lg:grid-rows-1">
       <section aria-label="Stations" className="pip-panel pip-corners flex flex-col p-4">
-        <h2 className="font-display pip-glow px-1 text-3xl tracking-widest">{"// FREQUENCIES"}</h2>
+        <h2 className="font-display pip-glow flex items-center gap-2 px-1 text-3xl tracking-widest">
+          <IconRadio />
+          FREQUENCIES
+        </h2>
         <ul className="mt-2 space-y-2">
           {RADIO.map((r, i) => (
             <li key={r.freq}>
@@ -35,7 +39,7 @@ export default function RadioScreen({ sound }) {
               >
                 <span className="font-display tabular text-2xl">{r.freq}</span>
                 <span className="font-display text-xl tracking-widest">{r.name}</span>
-                <span className="ml-auto text-xs tabular opacity-60">[{String(i + 1).padStart(2, "0")}]</span>
+                <span className="ml-auto text-sm tabular opacity-60">[{String(i + 1).padStart(2, "0")}]</span>
               </button>
             </li>
           ))}
@@ -50,7 +54,7 @@ export default function RadioScreen({ sound }) {
               <span key={i} className="absolute top-0 h-full w-px bg-[var(--pip-dim)]" style={{ left: `${i * 12.5}%` }} />
             ))}
           </div>
-          <div className="mt-1 flex justify-between text-[10px] tracking-[0.2em] opacity-60">
+          <div className="mt-1 flex justify-between text-xs tracking-[0.2em] opacity-60">
             <span>88</span><span>92</span><span>96</span><span>100</span>
           </div>
         </div>
@@ -59,7 +63,7 @@ export default function RadioScreen({ sound }) {
       <section aria-label="Now playing" aria-live="polite" className="pip-panel pip-corners relative flex flex-col overflow-hidden p-6">
         <div key={st.freq} className="animate-screen-in-fast relative flex flex-1 flex-col justify-evenly">
           <Emblem aria-hidden="true" className="pointer-events-none absolute left-3/4 top-1/2 hidden h-64 w-64 -translate-x-1/2 -translate-y-1/2 opacity-10 md:block" />
-          <p className="text-xs tracking-[0.35em] opacity-70">
+          <p className="text-sm tracking-[0.3em] opacity-70">
             {`NOW RECEIVING — ${st.freq} MHz`}
           </p>
           <p className="font-display mt-2 text-5xl tracking-wider pip-glow sm:text-6xl">{st.name}</p>
@@ -74,10 +78,10 @@ export default function RadioScreen({ sound }) {
             onClick={() => sound && blip(1200, 0.09)}
             className="mt-6 inline-block self-start bg-[var(--pip)] px-6 py-2 font-display text-2xl tracking-widest text-black transition-all hover:scale-[1.03] hover:shadow-[0_0_20px_var(--pip-dim)] active:scale-95"
           >
-            OPEN SIGNAL ↗
+            OPEN SIGNAL <ArrowUpRight className="ml-2" />
           </a>
         </div>
-        <p className="pt-4 text-[11px] tracking-[0.3em] opacity-50">
+        <p className="pt-4 text-xs tracking-[0.3em] opacity-50">
           TIP: EMAIL IS THE FASTEST FREQUENCY. CARAVANS WELCOME.
         </p>
       </section>
